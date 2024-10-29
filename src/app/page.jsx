@@ -1,7 +1,7 @@
 import { getProdutosDB } from '@/bd/useCases/produtoUseCases';
 import Link from 'next/link';
 
-export const revalidate = 60; // revalida a cada 30 segundos
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
 
