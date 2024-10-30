@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Suspense } from 'react';
 import Loading from '@/componentes/comuns/Loading';
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/auth/auth";
 
 const deleteProduto = async (codigo) => {
     'use server';
@@ -21,6 +23,12 @@ const deleteProduto = async (codigo) => {
 export const dynamic = 'force-dynamic';
 
 export default async function Produto() {
+
+    const session = await getServerSession(authOptions);
+
+    if (!session) {
+        redirect("/api/auth/signin");
+    }
 
     const produtos = await getProdutosDB();
 
@@ -55,11 +63,14 @@ export default async function Produto() {
                                         href={`/privado/produto/${produto.codigo}/formulario`}>
                                         <i className="bi bi-pencil-square"></i>
                                     </Link>
-                                    <form action={deleteProduto.bind(null, produto.codigo)} className="d-inline">
-                                        <Button variant="danger" type='submit'>
-                                            <i className="bi bi-trash"></i>
-                                        </Button>
-                                    </form>
+                                    {
+                                        session?.user?.tipo === 'A' &&
+                                        <form action={deleteProduto.bind(null, produto.codigo)} className="d-inline">
+                                            <Button variant="danger" type='submit'>
+                                                <i className="bi bi-trash"></i>
+                                            </Button>
+                                        </form>
+                                    }
                                 </td>
                                 <td>{produto.codigo}</td>
                                 <td>{produto.nome}</td>
